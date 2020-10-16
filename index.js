@@ -36,7 +36,7 @@ client.connect((err) => {
     const projectDetails = req.body.projectDetails;
     const price = req.body.price;
 
-    const newImg = file.data;
+    const newImg = file.files.file.data;
     const encImg = newImg.toString("base64");
 
     var image = {
@@ -123,6 +123,5 @@ client.connect((err) => {
     });
   });
 });
-
 
 app.listen(process.env.PORT || port);
