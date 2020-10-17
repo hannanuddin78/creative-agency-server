@@ -14,6 +14,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static("orderImg"));
 app.use(fileUpload());
+const { ObjectID } = require("mongodb");
 
 const port = 5000;
 
@@ -27,16 +28,16 @@ client.connect((err) => {
   const reviewCollection = client.db("creativeAgency").collection("reviews");
   const serviceCollection = client.db("creativeAgency").collection("service");
   const adminEmailCT = client.db("creativeAgency").collection("adminEmail");
-
+  console.log("ok");
   app.post("/addOrder", (req, res) => {
-    const file = req.files.file;
+    const fileds = req.files.file;
     const name = req.body.name;
     const email = req.body.email;
     const project = req.body.project;
     const projectDetails = req.body.projectDetails;
     const price = req.body.price;
 
-    const newImg = file.files.file.data;
+    const newImg = fileds.data;
     const encImg = newImg.toString("base64");
 
     var image = {
@@ -122,6 +123,24 @@ client.connect((err) => {
       res.send(result.insertedCount > 0);
     });
   });
+
+  app.patch("/update-status", (req, res) => {
+    orderCollection
+      .updateOne(
+        { _id: ObjectID(req.body.id) },
+        {
+          $set: { status: req.body.status },
+        }
+      )
+      .then((result) => {
+        res.send(result.modifiedCount > 0);
+      })
+      .catch((err) => console.log(err));
+  });
+});
+
+app.get("/", (req, res) => {
+  res.send("hanan paku");
 });
 
 app.listen(process.env.PORT || port);
